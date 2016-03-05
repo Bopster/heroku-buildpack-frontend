@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ -f $1/gulpfile.js ]; then
+    echo "GulpBuildpack"
+    exit 0
+else
+    exit 1
+fi
