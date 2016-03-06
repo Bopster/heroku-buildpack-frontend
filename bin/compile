@@ -5,6 +5,7 @@
 BUILD_DIR=${1:-}
 CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
+BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 
 ### Set methods and vars used in script
 
@@ -14,12 +15,16 @@ indent() {
 
 PREFIX="----->"
 
+DEFAULT_CACHE="node_modules bower_components"
+
+## Load deps
+source $BP_DIR/lib/cache.sh
+
 ## Start compiling
 
 # Restore node cache dir
-echo "$PREFIX Start restoring NodeJS Buildpack cache node_modules dir"
-mkdir -p $(dirname "$BUILD_DIR/node_modules")
-cp -r "$CACHE_DIR/node/node_modules" "$BUILD_DIR"
+echo "$PREFIX Restoring cache"
+restore_cache_directories "$BUILD_DIR" "$CACHE_DIR" "$DEFAULT_CACHE" | indent
 
 # Get into build dir
 cd $BUILD_DIR
@@ -49,6 +54,9 @@ else
     echo "./dist Directory found, build done." | indent
 fi
 
+echo "$PREFIX Saving cache"
+save_cache_directories "$BUILD_DIR" "$CACHE_DIR" "$DEFAULT_CACHE" | indent
+
 # Do cleanup
 echo "$PREFIX Start cleanup to keep slug size small"
 
@@ -60,4 +68,9 @@ fi
 if [ -d "$BUILD_DIR/src" ]; then
     echo "removing src directory." | indent
     rm -r $BUILD_DIR/src
+fi
+
+if [ -d "$BUILD_DIR/e2e" ]; then
+    echo "removing e2e directory." | indent
+    rm -r $BUILD_DIR/e2e
 fi
