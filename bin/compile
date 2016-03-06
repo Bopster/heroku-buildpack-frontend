@@ -19,7 +19,7 @@ PREFIX="----->"
 # Restore node cache dir
 echo "$PREFIX Start restoring NodeJS Buildpack cache node_modules dir"
 mkdir -p $(dirname "$BUILD_DIR/node_modules")
-mv "$CACHE_DIR/node/$cachepath" "$BUILD_DIR/node_modules"
+cp -r "$CACHE_DIR/node/node_modules" "$BUILD_DIR"
 
 # Get into build dir
 cd $BUILD_DIR
