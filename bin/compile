@@ -1,17 +1,5 @@
 #!/bin/sh
 # bin/compile <build-dir> <cache-dir> <env-dir>
-
-### Configure environment
-
-set -o errexit    # always exit on error
-set -o pipefail   # don't ignore exit codes when piping output
-set -o nounset    # fail on unset variables
-unset GIT_DIR     # Avoid GIT_DIR leak from previous build steps
-
-### Constants
-
-DEFAULT_CACHE="node_modules bower_components"
-
 ### Configure directories
 
 BUILD_DIR=${1:-}
@@ -24,39 +12,22 @@ indent() {
     sed -u 's/^/       /'
 }
 
-export_env_dir() {
-    whitelist_regex=${2:-''}
-    blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
-    if [ -d "$ENV_DIR" ]; then
-        for e in $(ls $ENV_DIR); do
-            echo "$e" | indent | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
-            export "$e=$(cat $ENV_DIR/$e)"
-            :
-        done
-    fi
-}
-
 PREFIX="----->"
 
 ## Start compiling
 
-# Check and run gulp
-# get the env vars
-if [ -d "$ENV_DIR" ]; then
-  echo "$PREFIX Exporting config vars to environment"
-  export_env_dir $ENV_DIR
-fi
+# Install bower
+echo "$PREFIX Setup environment for bower"
+echo "Install bower" | indent
+npm install bower
+
+echo "Run 'bower install'" | indent
+$BUILD_DIR/node_modules/.bin/bower install | indent
 
 # Install gulp locally
 echo "$PREFIX Installing Gulp"
 npm install gulp
 
-if [ -z "$var" ]; then
-    echo "$PREFIX Running gulp without any command"
-    $BUILD_DIR/node_modules/.bin/gulp
-else
-    echo "$PREFIX Running gulp with command $GULP_COMMAND"
-    $BUILD_DIR/node_modules/.bin/gulp $GULP_COMMAND
-fi
+$BUILD_DIR/node_modules/.bin/gulp | indent
 
 echo "$PREFIX Done GulpBuild"
