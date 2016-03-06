@@ -48,3 +48,14 @@ if [ ! -d "$BUILD_DIR/dist" ]; then
 else
     echo "./dist Directory found, build done." | indent
 fi
+
+# Do cleanup
+echo "$PREFIX Start cleanup to keep slug size small"
+echo "removing bower_components directory." | indent
+rm -r $BUILD_DIR/bower_components
+
+echo "removing src directory." | indent
+rm -r $BUILD_DIR/src
+
+echo "removing e2e directory." | indent
+rm -r $BUILD_DIR/e2e
