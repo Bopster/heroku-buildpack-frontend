@@ -44,6 +44,10 @@ echo "$PREFIX Running gulp"
 
 $BUILD_DIR/node_modules/.bin/gulp | indent
 
+ls ./
+
+ls $BUILD_DIR
+
 echo "$PREFIX Checking if ./dir directory is present"
 
 if [ ! -d "$BUILD_DIR/dir" ]; then
