@@ -40,13 +40,18 @@ echo "$PREFIX Start restoring NodeJS Buildpack cache node_modules dir"
 mkdir -p $(dirname "$BUILD_DIR/node_modules")
 mv "$CACHE_DIR/node/$cachepath" "$BUILD_DIR/node_modules"
 
+ls  $BUILD_DIR/node_modules
+ls $BUILD_DIR/node_modules/.bin
+
 # Install bower
 echo "$PREFIX Setup environment for bower"
 echo "Install bower" | indent
 npm install bower >/dev/null
 
-echo "Run 'bower install'" | indent
-$BUILD_DIR/node_modules/.bin/bower install | indent
+if [ ! -f "$BUILD_DIR/node_modules/.bin/bower" ]; then
+    echo "Run 'bower install'" | indent
+    $BUILD_DIR/node_modules/.bin/bower install | indent
+fi
 
 # Install gulp locally
 echo "$PREFIX Installing Gulp"
