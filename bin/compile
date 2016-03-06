@@ -32,15 +32,9 @@ npm install --quit >/dev/null
 echo "$PREFIX Setup environment for bower"
 
 if [ ! -f "$BUILD_DIR/node_modules/.bin/bower" ]; then
-    # Get into build dir
-    cd $BUILD_DIR
-
     echo "Install bower" | indent
     npm install bower >/dev/null
 fi
-
-# Get into build dir
-cd $BUILD_DIR
 
 echo "Run 'bower install'" | indent
 $BUILD_DIR/node_modules/.bin/bower install | indent
@@ -48,15 +42,9 @@ $BUILD_DIR/node_modules/.bin/bower install | indent
 # Install gulp locally
 echo "$PREFIX Running gulp"
 
-# Get into build dir
-cd $BUILD_DIR
-
-$CACHE_DIR/node_modules/.bin/gulp | indent
+$BUILD_DIR/node_modules/.bin/gulp | indent
 
 echo "$PREFIX Checking if ./dir directory is present"
-
-# Get into build dir
-cd $BUILD_DIR
 
 if [ ! -d "$BUILD_DIR/dir" ]; then
     echo "No ./dir directory found. This should be present by now, exiting." | indent
