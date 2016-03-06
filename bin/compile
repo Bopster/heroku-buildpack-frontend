@@ -25,8 +25,8 @@ mv "$CACHE_DIR/node/$cachepath" "$BUILD_DIR/node_modules"
 cd $BUILD_DIR
 
 # Install all npm dev dependencies
-# echo "$PREFIX Installing all npm packages"
-# npm install --quit >/dev/null
+echo "$PREFIX Installing all npm packages"
+npm install --quit >/dev/null
 
 # Install bower
 echo "$PREFIX Setup environment for bower"
@@ -44,15 +44,11 @@ echo "$PREFIX Running gulp"
 
 $BUILD_DIR/node_modules/.bin/gulp | indent
 
-ls ./
+echo "$PREFIX Checking if ./dist directory is present"
 
-ls $BUILD_DIR
-
-echo "$PREFIX Checking if ./dir directory is present"
-
-if [ ! -d "$BUILD_DIR/dir" ]; then
-    echo "No ./dir directory found. This should be present by now, exiting." | indent
+if [ ! -d "$BUILD_DIR/dist" ]; then
+    echo "No ./dist directory found. This should be present by now, exiting." | indent
     exit 1
 else
-    echo "./dir Directory found, build done." | indent
+    echo "./dist Directory found, build done." | indent
 fi
