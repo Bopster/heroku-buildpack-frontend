@@ -34,7 +34,7 @@ if [ ! -f "$BUILD_DIR/node_modules/.bin/bower" ]; then
 fi
 
 info "Run 'bower install'"
-$BUILD_DIR/node_modules/.bin/bower install | output
+$BUILD_DIR/node_modules/.bin/bower install --quiet | output
 
 # Install gulp locally
 header "Running gulp"
