@@ -1,5 +1,3 @@
-#!/bin/sh
-
 restore_cache_directories() {
   local build_dir=${1:-}
   local cache_dir=${2:-}

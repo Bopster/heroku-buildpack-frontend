@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # bin/compile <build-dir> <cache-dir> <env-dir>
 ### Configure directories
 
@@ -9,68 +9,64 @@ BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 
 ### Set methods and vars used in script
 
-indent() {
-    sed -u 's/^/       /'
-}
-
-PREFIX="----->"
-
 DEFAULT_CACHE="node_modules bower_components"
 
 ## Load deps
+
 source $BP_DIR/lib/cache.sh
+source $BP_DIR/lib/output.sh
 
 ## Start compiling
 
 # Restore node cache dir
-echo "$PREFIX Restoring cache"
-restore_cache_directories "$BUILD_DIR" "$CACHE_DIR" "$DEFAULT_CACHE" | indent
+header "Restoring cache"
+restore_cache_directories "$BUILD_DIR" "$CACHE_DIR" "$DEFAULT_CACHE" | output
 
 # Get into build dir
 cd $BUILD_DIR
 
 # Install bower
-echo "$PREFIX Setup environment for bower"
+header "Setup environment for bower"
 
 if [ ! -f "$BUILD_DIR/node_modules/.bin/bower" ]; then
-    echo "Install bower" | indent
+    info "Install bower"
     npm install bower >/dev/null
 fi
 
-echo "Run 'bower install'" | indent
-$BUILD_DIR/node_modules/.bin/bower install | indent
+info "Run 'bower install'"
+$BUILD_DIR/node_modules/.bin/bower install | output
 
 # Install gulp locally
-echo "$PREFIX Running gulp"
+header "Running gulp"
 
-$BUILD_DIR/node_modules/.bin/gulp | indent
+$BUILD_DIR/node_modules/.bin/gulp | output
 
-echo "$PREFIX Checking if ./dist directory is present"
+header "Checking if ./dist directory is present"
 
 if [ ! -d "$BUILD_DIR/dist" ]; then
-    echo "No ./dist directory found. This should be present by now, exiting." | indent
+    info "No ./dist directory found. This should be present by now, exiting."
     exit 1
 else
-    echo "./dist Directory found, build done." | indent
+    info "./dist Directory found, build done."
 fi
 
-echo "$PREFIX Saving cache"
-save_cache_directories "$BUILD_DIR" "$CACHE_DIR" "$DEFAULT_CACHE" | indent
+header "Saving cache"
+save_cache_directories "$BUILD_DIR" "$CACHE_DIR" "$DEFAULT_CACHE" | output
 
 # Do cleanup
-echo "$PREFIX Start cleanup to keep slug size small"
+header "Start cleanup to keep slug size small"
 
 if [ -d "$BUILD_DIR/bower_components" ]; then
-    echo "removing bower_components directory." | indent
+    info "removing bower_components directory."
     rm -r $BUILD_DIR/bower_components
 fi
 
 if [ -d "$BUILD_DIR/src" ]; then
-    echo "removing src directory." | indent
+    info "removing src directory."
     rm -r $BUILD_DIR/src
 fi
 
 if [ -d "$BUILD_DIR/e2e" ]; then
-    echo "removing e2e directory." | indent
+    info "removing e2e directory."
     rm -r $BUILD_DIR/e2e
 fi
