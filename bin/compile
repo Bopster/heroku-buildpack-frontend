@@ -14,20 +14,53 @@ indent() {
 
 PREFIX="----->"
 
+restore_cache_directories() {
+  local build_dir=${1:-}
+  local cache_dir=${2:-}
+
+  for cachepath in ${@:3}; do
+    if [ -e "$build_dir/$cachepath" ]; then
+      echo "- $cachepath (exists - skipping)"
+    else
+      if [ -e "$cache_dir/node/$cachepath" ]; then
+        echo "- $cachepath"
+        mkdir -p $(dirname "$build_dir/$cachepath")
+        mv "$cache_dir/node/$cachepath" "$build_dir/$cachepath"
+      else
+        echo "- $cachepath (not cached - skipping)"
+      fi
+    fi
+  done
+}
+
 ## Start compiling
+
+# Restore node cache dir
+echo "$PREFIX Start restoring NodeJS Buildpack cache node_modules dir"
+mkdir -p $(dirname "$BUILD_DIR/node_modules")
+mv "$CACHE_DIR/node/$cachepath" "$BUILD_DIR/node_modules"
 
 # Install bower
 echo "$PREFIX Setup environment for bower"
 echo "Install bower" | indent
-npm install bower
+npm install bower >/dev/null
 
 echo "Run 'bower install'" | indent
 $BUILD_DIR/node_modules/.bin/bower install | indent
 
 # Install gulp locally
 echo "$PREFIX Installing Gulp"
-npm install gulp
+npm install gulp >/dev/null
 
-$BUILD_DIR/node_modules/.bin/gulp | indent
+$CACHE_DIR/node_modules/.bin/gulp | indent
 
 echo "$PREFIX Done GulpBuild"
+
+echo "$PREFIX Checking if ./dir directory is present"
+
+if [ ! -d "$BUILD_DIR/dir" ]; then
+    echo "No ./dir directory found. This should be present by now, exiting." | indent
+    exit 1
+else
+    echo "./dir Directory found, build done." | indent
+fi
